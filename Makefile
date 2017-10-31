@@ -39,6 +39,8 @@ DEFINES = $(addprefix -D,$(DEF))
 
 
 #COMMANDS
+all: $(NAME).bin $(NAME).hex
+
 $(NAME).bin: $(NAME).elf
 	$(OBJCOPY) -O binary $^ $@
 
@@ -59,6 +61,22 @@ $(NAME).elf: $(SOURCES)
 
 #%.s.o: %.s
 #	$(AS) $(ASFLAGS) $^ -o $(notdir $@)
+
+.PHONY: openocd	
+openocd: $(NAME).elf
+	xfce4-terminal --command="openocd -f interface/stlink-v2.cfg -f target/stm32f0x.cfg -c \"init\" -c \"halt\" -c \"reset halt\""
+
+.PHONY: flash	
+flash: $(NAME).elf
+	openocd -f interface/stlink-v2.cfg -f target/stm32f0x.cfg \
+	        -c init -c targets -c "halt" \
+	        -c "flash write_image erase $^" \
+	        -c "verify_image $^" \
+		-c "reset run" -c shutdown
+
+#.PHONY: flash	
+#flash: $(NAME).bin
+#	st-flash write $^ 0x8000000
 
 .PHONY: clean	
 clean: 

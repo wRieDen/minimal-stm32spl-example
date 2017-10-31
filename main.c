@@ -15,7 +15,7 @@ int main(void)
 	GPIO_Init(GPIOA, &GPIO_InitStructure);
 
 	for(;;){
-		GPIOB->BSRR = 0x1800;
-		GPIOB->BRR = 0x1800;
+		GPIOA->BSRR = 0x1800;
+		GPIOA->BRR = 0x1800;
 	}
 }
